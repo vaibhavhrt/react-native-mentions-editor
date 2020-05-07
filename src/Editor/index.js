@@ -8,7 +8,7 @@ import {
   Animated,
   Platform,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 
 import EU from "./EditorUtils";
@@ -32,7 +32,7 @@ export class Editor extends React.Component {
     leftIcon: PropTypes.any,
     sourceEmpty: PropTypes.any,
     icons: PropTypes.array,
-    infoReply: PropTypes.object
+    infoReply: PropTypes.object,
   };
 
   constructor(props) {
@@ -45,7 +45,7 @@ export class Editor extends React.Component {
       this.mentionsMap = map;
       msg = newValue;
       // formattedMsg = this.formatText(newValue);
-      setTimeout(()=>{
+      setTimeout(() => {
         this.sendMessageToFooter(newValue);
       });
     }
@@ -61,14 +61,14 @@ export class Editor extends React.Component {
       trigger: "@",
       selection: {
         start: 0,
-        end: 0
+        end: 0,
       },
       menIndex: 0,
       showMentions: false,
       editorHeight: 72,
       scrollContentInset: { top: 0, bottom: 0, left: 0, right: 0 },
       placeholder: props.placeholder || "Type something...",
-      mentionList: []
+      mentionList: [],
     };
     this.isTrackingStarted = false;
     this.previousChar = " ";
@@ -82,13 +82,13 @@ export class Editor extends React.Component {
       const newInputText = `${prevState.inputText}${prevState.trigger}`;
       return {
         inputText: newInputText,
-        showMentions: nextProps.showMentions
+        showMentions: nextProps.showMentions,
       };
     }
 
     if (!nextProps.showMentions) {
       return {
-        showMentions: nextProps.showMentions
+        showMentions: nextProps.showMentions,
       };
     }
     return null;
@@ -112,14 +112,31 @@ export class Editor extends React.Component {
     if (prevProps.clearInput !== this.props.clearInput) {
       this.setState({
         inputText: "",
-        formattedText: ""
+        formattedText: "",
       });
       this.mentionsMap.clear();
     }
 
-    if (prevProps.infoReply !==  this.props.infoReply) {
-      this.mentionsMap.clear()
-      this.onReplyComment()
+    if (prevProps.infoReply !== this.props.infoReply) {
+      this.mentionsMap.clear();
+      this.onReplyComment();
+    }
+
+    if (
+      this.props.initialValue &&
+      this.props.initialValue !== "" &&
+      prevProps.initialValue !== this.props.initialValue
+    ) {
+      const { map, newValue } = EU.getMentionsWithInputText(
+        this.props.initialValue
+      );
+      this.mentionsMap = map;
+      // msg = newValue;
+      // formattedMsg = this.formatText(newValue);
+      this.setState({ inputText: newValue });
+      setTimeout(() => {
+        this.sendMessageToFooter(newValue);
+      });
     }
   }
 
@@ -139,7 +156,7 @@ export class Editor extends React.Component {
     this.setState({
       keyword: "",
       menIndex,
-      isTrackingStarted: true
+      isTrackingStarted: true,
     });
   }
 
@@ -147,14 +164,14 @@ export class Editor extends React.Component {
     this.isTrackingStarted = false;
     this.closeSuggestionsPanel();
     this.setState({
-      isTrackingStarted: false
+      isTrackingStarted: false,
     });
     this.props.onHideMentions();
   }
 
   updateSuggestions(lastKeyword) {
     this.setState({
-      keyword: lastKeyword
+      keyword: lastKeyword,
     });
   }
 
@@ -214,9 +231,9 @@ export class Editor extends React.Component {
     //   this.stopTracking();
     // }
 
-    const t = new RegExp('^@[a-zA-Z0-9]*$');
-    const lastKeyword = inputText.split(' ').pop()
-    if (t.test(inputText.split(' ').pop())) {
+    const t = new RegExp("^@[a-zA-Z0-9]*$");
+    const lastKeyword = inputText.split(" ").pop();
+    if (t.test(inputText.split(" ").pop())) {
       this.startTracking(menIndex);
     } else {
       this.stopTracking();
@@ -237,7 +254,10 @@ export class Editor extends React.Component {
     // let initialStr = inputText.substr(0, menIndex).trim();
 
     // replace last string
-    let initialStr = inputText.slice(0, inputText.length - inputText.split(' ').pop().length)
+    let initialStr = inputText.slice(
+      0,
+      inputText.length - inputText.split(" ").pop().length
+    );
     if (!EU.isEmpty(initialStr)) {
       initialStr = initialStr + " ";
     }
@@ -260,18 +280,18 @@ export class Editor extends React.Component {
      */
     const adjMentIndexes = {
       start: initialStr.length - 1,
-      end: inputText.length - remStr.length - 1
+      end: inputText.length - remStr.length - 1,
     };
     const mentionKeys = EU.getSelectedMentionKeys(
       this.mentionsMap,
       adjMentIndexes
     );
-    mentionKeys.forEach(key => {
+    mentionKeys.forEach((key) => {
       remStr = `@${this.mentionsMap.get(key).username} ${remStr}`;
     });
     return {
       initialStr,
-      remStr
+      remStr,
     };
   }
 
@@ -302,7 +322,7 @@ export class Editor extends React.Component {
     this.updateMentionsMap(
       {
         start: menEndIndex + 1,
-        end: text.length
+        end: text.length,
       },
       charAdded,
       true
@@ -413,9 +433,9 @@ export class Editor extends React.Component {
         formattedText = formattedText.concat(lastStr);
       }
       mentionList.push({
-          username: men.username,
-          ref: men.ref,
-        });
+        username: men.username,
+        ref: men.ref,
+      });
     });
     return mentionList;
   }
@@ -424,7 +444,7 @@ export class Editor extends React.Component {
     this.props.onChange({
       displayText: text,
       text: this.formatTextWithMentions(text),
-      mentionList: this.getMentionList(text)
+      mentionList: this.getMentionList(text),
     });
   }
 
@@ -448,7 +468,7 @@ export class Editor extends React.Component {
       let charDeleted = Math.abs(text.length - prevText.length);
       const totalSelection = {
         start: selection.start,
-        end: charDeleted > 1 ? selection.start + charDeleted : selection.start
+        end: charDeleted > 1 ? selection.start + charDeleted : selection.start,
       };
       /**
        * REmove all the selected mentions
@@ -481,7 +501,7 @@ export class Editor extends React.Component {
           this.mentionsMap,
           totalSelection
         );
-        mentionKeys.forEach(key => {
+        mentionKeys.forEach((key) => {
           this.mentionsMap.delete(key);
         });
       }
@@ -493,7 +513,7 @@ export class Editor extends React.Component {
       this.updateMentionsMap(
         {
           start: selection.end,
-          end: prevText.length
+          end: prevText.length,
         },
         charDeleted,
         false
@@ -505,7 +525,7 @@ export class Editor extends React.Component {
       this.updateMentionsMap(
         {
           start: selection.end,
-          end: text.length
+          end: text.length,
         },
         charAdded,
         true
@@ -536,7 +556,7 @@ export class Editor extends React.Component {
     this.sendMessageToFooter(text);
   };
 
-  onContentSizeChange = evt => {
+  onContentSizeChange = (evt) => {
     /**
      * this function will dynamically
      * calculate editor height w.r.t
@@ -554,7 +574,7 @@ export class Editor extends React.Component {
       let editorHeight = 40;
       editorHeight = editorHeight + height;
       this.setState({
-        editorHeight
+        editorHeight,
       });
     }
   };
@@ -574,22 +594,34 @@ export class Editor extends React.Component {
   }
 
   onChooseIcon = (icon) => {
-    this.setState({
-      inputText: this.state.inputText.concat(icon)
-    }, ()=> {
-      this.sendMessageToFooter(this.state.inputText)
-    })
-  }
+    this.setState(
+      {
+        inputText: this.state.inputText.concat(icon),
+      },
+      () => {
+        this.sendMessageToFooter(this.state.inputText);
+      }
+    );
+  };
 
   onReplyComment = () => {
-    const { infoReply } = this.props
-    this.onSuggestionTap(infoReply, true)
-  }
+    const { infoReply } = this.props;
+    this.onSuggestionTap(infoReply, true);
+  };
 
   render() {
     const { props, state } = this;
     const { editorStyles = {} } = props;
-    const icons = props.icons || ['😂', '😉', '😍', '😭', '👍', '❤️', '😘', '😎']
+    const icons = props.icons || [
+      "😂",
+      "😉",
+      "😍",
+      "😭",
+      "👍",
+      "❤️",
+      "😘",
+      "😎",
+    ];
 
     if (!props.showEditor) return null;
 
@@ -598,7 +630,7 @@ export class Editor extends React.Component {
       keyword: state.keyword,
       isTrackingStarted: state.isTrackingStarted,
       onSuggestionTap: this.onSuggestionTap.bind(this),
-      editorStyles
+      editorStyles,
     };
 
     return (
@@ -631,18 +663,18 @@ export class Editor extends React.Component {
             </TouchableOpacity>
           ))}
         </View> */}
-       
+
         <View style={styles.inputWrapper}>
           {/* <Image source={props.leftIcon} style={styles.leftIcon} resizeMode={'contain'}/> */}
           <TextInput
-            ref={input => props.onRef && props.onRef(input)}
+            ref={props.onRef ? props.onRef : undefined}
             style={[styles.input, editorStyles.input]}
             multiline
             name={"message"}
             value={state.inputText}
             onBlur={props.toggleEditor}
             onChangeText={this.onChange}
-            selection={Platform.OS === 'ios' ? this.state.selection : null}
+            selection={Platform.OS === "ios" ? this.state.selection : null}
             selectionColor={"#000"}
             onSelectionChange={this.handleSelectionChange}
             placeholder={state.placeholder}
