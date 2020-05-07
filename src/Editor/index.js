@@ -602,7 +602,7 @@ export class Editor extends React.Component {
     };
 
     return (
-      <View styles={editorStyles.mainContainer}>
+      <View styles={[styles.mainContainer, editorStyles.mainContainer]}>
         {props.renderMentionList ? (
           props.renderMentionList(mentionListProps)
         ) : (
@@ -624,16 +624,16 @@ export class Editor extends React.Component {
           </Animated.View>
         )}
 
-        <View style={styles.iconWrapper}>
+        {/* <View style={styles.iconWrapper}>
           {icons.map((icon, index) => (
             <TouchableOpacity onPress={() => this.onChooseIcon(icon)} key={index}>
               <Text style={styles.icon}>{icon}</Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
        
         <View style={styles.inputWrapper}>
-          <Image source={props.leftIcon} style={styles.leftIcon} resizeMode={'contain'}/>
+          {/* <Image source={props.leftIcon} style={styles.leftIcon} resizeMode={'contain'}/> */}
           <TextInput
             ref={input => props.onRef && props.onRef(input)}
             style={[styles.input, editorStyles.input]}
