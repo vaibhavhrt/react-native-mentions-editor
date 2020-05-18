@@ -675,7 +675,7 @@ export class Editor extends React.Component {
             onBlur={props.toggleEditor}
             onChangeText={this.onChange}
             selection={Platform.OS === "ios" ? this.state.selection : null}
-            selectionColor={"#000"}
+            // selectionColor={"#000"}
             onSelectionChange={this.handleSelectionChange}
             placeholder={state.placeholder}
             onContentSizeChange={this.onContentSizeChange}
